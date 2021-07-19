@@ -79,7 +79,7 @@ namespace Simulacion
                 db.matriculas.Add(matrPedroNivel3);
                 db.SaveChanges();
             }
-            //----------------------------------------------------------------------------------------------     
+            //----------------------------------------------------------------------------------------------
             //Reporte
             Publicar.RecordAcademico(Reporte.CalificacionesPorEstudiante(estNombre));
         }
