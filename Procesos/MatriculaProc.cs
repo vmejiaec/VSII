@@ -20,7 +20,9 @@ namespace Procesos
 
         // Registro de una matrícula
         static public Matricula CreaMatricula(
-            EscuelaContext context, string estNombre, string carNombre, DateTime periodoFechaInicio, string[] cursosNombres)
+            EscuelaContext context, string estado,
+            string estNombre, string carNombre, 
+            DateTime periodoFechaInicio, string[] cursosNombres)
         {
             // 1.- Consulta del estudiante
             Estudiante estudiante = context.estudiantes
@@ -37,7 +39,7 @@ namespace Procesos
                 Estudiante = estudiante,
                 Fecha = periodoFechaInicio, // Se matricula el mismo día que inicia el período
                 Carrera = carrera,
-                Estado = "Pendiente",
+                Estado = estado,
                 Periodo = periodo
             };
             // 5.- Detalles de la Matrícula
