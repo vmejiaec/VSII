@@ -24,8 +24,8 @@ namespace Simulacion
             // Matrícula de segundo nivel
             Matricula matrPedroNivel2;
             DateTime dt2020_PAO2 = new DateTime(2020, 9, 1);
-            string[] Nivel2cursos = new string[] { 
-                "Nivel 2 Diurna de Diseño Web", 
+            string[] Nivel2cursos = new string[] {
+                "Nivel 2 Diurna de Diseño Web",
                 "Nivel 2 Diurno de Administración BBDD" };
             // Notas de segundo Nivel
             Dictionary<string, Calificacion> dicPedroCursosCalifsNivel2 = new()
@@ -51,9 +51,9 @@ namespace Simulacion
             // Matrícula de tercer nivel
             Matricula matrPedroNivel3;
             DateTime dt2021_PAO1 = new DateTime(2021, 4, 1);
-            string[] Nivel3cursos = new string[] { 
-                "Nivel 3 Diurno de Lógica de Programación", 
-                "Nivel 3 Diurno de Productos Digitales", 
+            string[] Nivel3cursos = new string[] {
+                "Nivel 3 Diurno de Lógica de Programación",
+                "Nivel 3 Diurno de Productos Digitales",
                 "Nivel 3 Diurno de Video Marketing" };
             // Notas de tercer Nivel
             Dictionary<string, Calificacion> dicPedroCursosCalifsNivel3 = new()
