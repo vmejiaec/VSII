@@ -22,11 +22,6 @@ namespace Simulacion
             var datosMatrículas = new DatosMatrículas();
             datosMatrículas.Generar();
             // Regla del negocio
-            // 1. Listar las matrículas pendientes  
-            // 2. Para cada matrícula pendiente, analizamos sus materias
-            // 3. Para cada materia presente en los detalles de la matícula, averiguamos sus prerequisitos
-            // 4. Para cada materia presente en los prerequisaitos, averiguamos si ha sido aprobada previamente
-
             // Listar las matrículas pendientes  
             using (var db = new EscuelaContext())
             {
@@ -43,21 +38,36 @@ namespace Simulacion
                 // Revisamos las matrículas
                 foreach(var matricula in listaMatriculas)
                 {
-                    Console.WriteLine("Matrícula ID:" +matricula.MatriculaId + " Estudiante:" + matricula.Estudiante.Nombre);
+                    bool MatriculaAprobada = true;
                     foreach(var det in matricula.Matricula_Dets)
                     {
-                        Console.WriteLine("\tCurso: "+det.Curso.Nombre);
-                        Console.WriteLine("\t  Materia: " + det.Curso.Materia.Nombre);
-                        Console.WriteLine("\t  Lista de Prerequisitos");
+                        var materia = det.Curso.Materia;
+                        // Verificamos si la materia tiene prerequisitos
+                        if (materia.Malla.PreRequisitos.Count == 0)
+                        {
+                            // Esta materia no tiene problemas
+                            continue;
+                        }
                         foreach(var pre in det.Curso.Materia.Malla.PreRequisitos)
                         {
-                            Console.WriteLine("  "+pre.Materia.Nombre);
+                            var materiaPre = pre.Materia;
+                            // Verificar si la materia de prerequisito ha sido aprobada
+                            // por el estudiante en alguna matrícula anterior
+                            if (!MateriaAprobada(matricula.Estudiante, materiaPre))
+                            {
+                                MatriculaAprobada = false;
+                                continue;
+                            }
                         }
                     }
+                    matricula.Estado = MatriculaAprobada ? "Aprobada" : "Rechazada";
                 }
             }
         }
 
-
+        private static bool MateriaAprobada(Estudiante estudiante, Materia materiaPre)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
