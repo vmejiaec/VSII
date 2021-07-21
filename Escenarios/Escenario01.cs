@@ -40,7 +40,8 @@ namespace Escenarios
             Estudiante estPedro = new() { Nombre = "Pedro Infante" };
             Estudiante estJuan = new() { Nombre = "José Mera" };
             Estudiante estMaria = new() { Nombre = "María Brito" };
-            List<Estudiante> lstEstudiantes = new(){estJuan, estMaria, estPedro};
+            Estudiante estKarla = new() { Nombre = "Karla Castro" };
+            List<Estudiante> lstEstudiantes = new(){estJuan, estMaria, estPedro, estKarla};
             datos.Add(ListaTipo.Estudiantes, lstEstudiantes);
 
             // .- Registro de las carreras de la oferta académica

@@ -194,6 +194,73 @@ namespace Simulacion
                 db.matriculas.Add(matrJuanNivel4);
                 db.SaveChanges();
             }
+            //----------------------------------------------------------------------------------------------
+
+            // Matriculas de Karla
+            estNombre = "Karla Castro";
+            // Matrícula de segundo nivel
+            Matricula matrKarlaNivel2;
+            Nivel2cursos = new string[] { "Nivel 2 Diurna de Diseño Web", "Nivel 2 Diurno de Administración BBDD" };
+            // Notas de tercer Nivel
+            Dictionary<string, Calificacion> dicKarlaCursosCalifsNivel2 = new()
+            {
+                {
+                    Nivel2cursos[0],
+                    new Calificacion() { Nota1 = 4.33f, Nota2 = 5.26f, Nota3 = 4.12f }
+                },
+                {
+                    Nivel2cursos[1],
+                    new Calificacion() { Nota1 = 8.78f, Nota2 = 9.33f, Nota3 = 6.27f }
+                }
+            };
+            // Matrícula de tercer nivel
+            Matricula matrKarlaNivel3;
+            Nivel3cursos = new string[] { 
+                "Nivel 3 Diurno de Lógica de Programación", 
+                "Nivel 3 Diurno de Productos Digitales", 
+                "Nivel 3 Diurno de Video Marketing" ,
+                "Nivel 2 Diurna de Diseño Web"
+            };
+            // Notas de tercer Nivel
+            Dictionary<string, Calificacion> dicKarlaCursosCalifsNivel3 = new()
+            {
+                {
+                    Nivel3cursos[0],
+                    new Calificacion() { Nota1 = 6.89f, Nota2 = 7.82f, Nota3 = 7.34f }
+                },
+                {
+                    Nivel3cursos[1],
+                    new Calificacion() { Nota1 = 7.84f, Nota2 = 7.12f, Nota3 = 7.50f }
+                },
+                {
+                    Nivel3cursos[2],
+                    new Calificacion() { Nota1 = 9.84f, Nota2 = 8.12f, Nota3 = 7.37f }
+                },
+                {
+                    Nivel3cursos[3],
+                    new Calificacion() { Nota1 = 6.55f, Nota2 = 8.84f, Nota3 = 8.91f }
+                }
+            };
+            // Matrícula de cuarto nivel
+            Matricula matrKarlaNivel4;
+            Nivel4cursos = new string[] { "Nivel 4 Diurno de Programación Web", "Nivel 4 Diurno de E-Learning" };
+            //----------------------------------------------------------------------------------------------
+            // Persistencia de Juan
+            using (var db = new EscuelaContext())
+            {
+                matrKarlaNivel2 = MatriculaProc.CreaMatricula(db,
+                    MatriculaEstados.Aprobada.ToString(), estNombre, carNombre, dt2020_PAO2, Nivel2cursos);
+                MatriculaProc.RegistrarNotas(matrKarlaNivel2, dicKarlaCursosCalifsNivel2);
+                matrKarlaNivel3 = MatriculaProc.CreaMatricula(db,
+                    MatriculaEstados.Aprobada.ToString(), estNombre, carNombre, dt2021_PAO1, Nivel3cursos);
+                MatriculaProc.RegistrarNotas(matrKarlaNivel3, dicKarlaCursosCalifsNivel3);
+                matrKarlaNivel4 = MatriculaProc.CreaMatricula(db,
+                    MatriculaEstados.Pendiente.ToString(), estNombre, carNombre, dt2021_PAO2, Nivel4cursos);
+                db.matriculas.Add(matrKarlaNivel2);
+                db.matriculas.Add(matrKarlaNivel3);
+                db.matriculas.Add(matrKarlaNivel4);
+                db.SaveChanges();
+            }
         }
     }
 }
