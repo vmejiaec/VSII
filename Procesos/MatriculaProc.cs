@@ -18,6 +18,20 @@ namespace Procesos
             _context = context;
         }
 
+        // Consulta la matrícula pendiente del estudiante y la valida
+        static public bool ConsultaYValidaMatriculaPendiente(string strEstudiante)
+        {
+            using (var db = new EscuelaContext())
+            {
+                var matricula = db.matriculas
+                    .Single(matr => 
+                        matr.Estudiante.Nombre == strEstudiante && 
+                        matr.Estado == "Pendiente"
+                    );
+            }
+            return true;
+        }
+
         // Registro de una matrícula
         static public Matricula CreaMatricula(
             EscuelaContext context, string estado,
@@ -70,81 +84,78 @@ namespace Procesos
             }
         }
 
-        // Validación de la matrícula
-        static public bool ValidarMatricula(int matriculaId)
+        public static bool MatriculaAprobada(int matriculaID)
         {
-            using (var context = new EscuelaContext())
+            bool aprobada = true;
+            using (var db = new EscuelaContext())
             {
-                Matricula matricula = context.matriculas
+                // Consulta a la configuración
+                var configuracion = db.configuracion.Single();
+                // Consulta de las matrículas pendientes
+                var matricula = db.matriculas
                     .Include(matr => matr.Estudiante)
                     .Include(matr => matr.Matricula_Dets)
                         .ThenInclude(det => det.Curso)
                             .ThenInclude(cur => cur.Materia)
-                                .ThenInclude(mat => mat.Prerequisitos)
-                                    .ThenInclude(pre => pre.Malla)
-                                        .ThenInclude(malla => malla.Materia)
-                    .Single(matr => matr.MatriculaId == matriculaId);
-                int estudianteId = matricula.EstudianteId;
-                // Verifica de cada materia los pre-requisitos
-                bool aprobado = true;
-                foreach (var matrDet in matricula.Matricula_Dets)
+                                .ThenInclude(mat => mat.Malla)
+                                    .ThenInclude(malla => malla.PreRequisitos)
+                                        .ThenInclude(pre => pre.Materia)
+                    .Single(matri => matri.MatriculaId == matriculaID && matri.Estado == "Pendiente");
+                // Revisa los prerequisitos
+                foreach (var det in matricula.Matricula_Dets)
                 {
-                    Materia materia = matrDet.Curso.Materia;
-                    // 1.- Materia no tiene pre-requisitos
-                    if (materia.Prerequisitos is null)
+                    var materia = det.Curso.Materia;
+                    // Si la materia no tiene malla, entonces OK
+                    if (materia.Malla is null) continue;
+                    // Si la lista de prerequisitos está vacia entonces OK.
+                    if (materia.Malla.PreRequisitos.Count == 0) continue;
+                    // Verificación de prerequisitos
+                    foreach (var prerequisito in materia.Malla.PreRequisitos)
                     {
-                        break;
-                    }
-                    else // 2.- Materia si tiene pre-requisitos
-                    {
-                        // Reviso los pre-requisitos
-                        foreach (var pre in materia.Prerequisitos)
+                        var materiaPreReq = prerequisito.Materia;
+                        // El estudiante habrá aprobado la materiaPreReq?
+                        if (!MateriaAprobada(matricula.Estudiante, materiaPreReq, configuracion))
                         {
-                            if (!MateriaAprobada(estudianteId, pre.Malla.MateriaId))
-                            {
-                                aprobado = false;
-                            }
+                            aprobada = false;
                         }
                     }
                 }
-                return aprobado;
             }
+            return aprobada;
         }
 
-        //Verifica que haya aprobado una materia
-        static public bool MateriaAprobada(int estudianteId, int materiaId)
+        public static bool MateriaAprobada(Estudiante estudiante, Materia materia, Configuracion configuracion)
         {
-            bool resultado = false;
-            using (var context = new EscuelaContext())
+            bool aprobada = false;
+            float peso1 = configuracion.PesoNota1;
+            float peso2 = configuracion.PesoNota2;
+            float peso3 = configuracion.PesoNota3;
+            float notaMin = configuracion.NotaMinima;
+            // Consultar las matrículas del estudiante en estado Aprobadas
+            using (var db = new EscuelaContext())
             {
-                Materia materia = context.materias
-                    .Include(mat => mat.Cursos)
-                        .ThenInclude(cur => cur.Matricula_Dets)
-                            .ThenInclude(det => det.Calificacion)
-                    .Include(mat => mat.Cursos)
-                        .ThenInclude(cur => cur.Matricula_Dets.Where(det => det.Matricula.EstudianteId == estudianteId))
-                            .ThenInclude(det => det.Matricula)
-                    .Single(mat => mat.MateriaId == materiaId);
-                foreach (var curso in materia.Cursos)
+                var listaMatriculas = db.matriculas
+                    .Include(matr => matr.Matricula_Dets)
+                        .ThenInclude(det => det.Calificacion)
+                    .Include(matr => matr.Matricula_Dets.Where(det => det.Curso.MateriaId == materia.MateriaId))
+                        .ThenInclude(det => det.Curso)
+                            .ThenInclude(cur => cur.Materia)
+                    .Where(matr =>
+                        matr.EstudianteId == estudiante.EstudianteId &&
+                        matr.Estado == "Aprobada"
+                    )
+                    .ToList();
+                foreach (var matricula in listaMatriculas)
                 {
-                    foreach (var det in curso.Matricula_Dets)
+                    foreach (var det in matricula.Matricula_Dets)
                     {
-                        if (det.Calificacion is null)
-                        {
-                            // 1.- No hay calificaciones
-                            return false;
-                        }
-                        else
-                        {
-                            // 2.- Revisa calificaciónes
-                            CalificacionProc opCalif = new CalificacionProc(context);
-                            if (opCalif.Aprobado(det.Calificacion))
-                                return true;
-                        }
+                        var materiaPreReq = det.Curso.Materia;
+                        if (det.Calificacion.Aprueba(peso1, peso2, peso3, notaMin)) aprobada = true;
                     }
                 }
             }
-            return resultado;
+            return aprobada;
         }
+
     }
 }

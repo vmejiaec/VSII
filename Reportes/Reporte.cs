@@ -86,6 +86,9 @@ namespace Reportes
         {
             using (var context = new EscuelaContext())
             {
+                // Configuración del sistema
+                var configuracion = context.configuracion.Single();
+                // Matricula
                 Matricula matricula = context.matriculas
                     .Include(matr => matr.Estudiante)
                     .Include(matr => matr.Matricula_Dets)
@@ -120,7 +123,7 @@ namespace Reportes
                             materia.Nombre, materia.Prerequisitos.Count);
                         foreach (var pre in materia.Prerequisitos)
                         {
-                            if (MatriculaProc.MateriaAprobada(estudianteId, pre.Malla.MateriaId))
+                            if (MatriculaProc.MateriaAprobada(matricula.Estudiante, pre.Malla.Materia,configuracion))
                             {
                                 Console.WriteLine("   - Pre Id {0}: {1} -> Aprobado", pre.Malla.MateriaId, pre.Malla.Materia.Nombre);
                             }
