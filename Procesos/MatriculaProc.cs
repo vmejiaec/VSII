@@ -21,15 +21,17 @@ namespace Procesos
         // Consulta la matrícula pendiente del estudiante y la valida
         static public bool ConsultaYValidaMatriculaPendiente(string strEstudiante)
         {
+            Matricula matricula;
             using (var db = new EscuelaContext())
             {
-                var matricula = db.matriculas
+                matricula = db.matriculas
+                    .Include(matr => matr.Estudiante)
                     .Single(matr => 
                         matr.Estudiante.Nombre == strEstudiante && 
                         matr.Estado == "Pendiente"
                     );
             }
-            return true;
+            return MatriculaAprobada(matricula.MatriculaId);
         }
 
         // Registro de una matrícula
