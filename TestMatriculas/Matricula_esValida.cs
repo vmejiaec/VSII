@@ -7,9 +7,9 @@ using Xunit;
 
 namespace TestMatriculas
 {
-    public class Calificaciones
+    public class Matricula_esValida
     {
-        public Calificaciones()
+        public Matricula_esValida()
         {
             // Código para crear el escenario 1
             Escenario01 escenario = new Escenario01();
@@ -21,9 +21,9 @@ namespace TestMatriculas
         }
 
         [Theory]
-        [InlineData("Pedro Infante", false)]
-        [InlineData("José Mera", false)]
-        [InlineData("María Brito", false)]
+        [InlineData("Pedro Infante",false)]
+        [InlineData("José Mera",    false)]
+        [InlineData("María Brito",  false)]
         [InlineData("Karla Castro", true)]
         public void VerificarMatriculas(string strEstudiante, bool resEsperado)
         {

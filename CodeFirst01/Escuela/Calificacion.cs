@@ -20,10 +20,13 @@ namespace Modelo.Escuela
         {            
             // Cálculo
             float suma = 0;
-            suma += Nota1 * peso1;
-            suma += Nota2 * peso2;
-            suma += Nota3 * peso3;
-            suma = MathF.Round(suma, 2);
+            suma += MathF.Round(Nota1 * peso1, 2);
+            suma += MathF.Round(Nota2 * peso2, 2);
+            suma += MathF.Round(Nota3 * peso3, 2);
+            //Víctor:
+            //Fecha: 23/07/2021
+            //Mejora en el cálculo de la nota final
+            //suma = MathF.Round(suma, 2);            
             return suma;
         }
         // Verifica si cumple el mínimo
